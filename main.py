@@ -29,24 +29,44 @@ class MyApp(ShowBase):
         # Loop its animation.
         self.pandaActor.loop("walk")
 
-        # Create the four lerp intervals needed for the panda to
-        # walk back and forth.
-        posInterval1 = self.pandaActor.posInterval(
-            13, Point3(0, -10, 0), startPos=Point3(0, 10, 0)
+        # Create the lerp intervals needed for the panda to
+        # walk in square.
+        walkForwardToNY = self.pandaActor.posInterval(
+            5, Point3(0, -5, 0), startPos=Point3(0, 5, 0)
         )
-        posInterval2 = self.pandaActor.posInterval(
-            13, Point3(0, 10, 0), startPos=Point3(0, -10, 0)
+        turnLeftInterval1 = self.pandaActor.hprInterval(
+            2, Point3(90, 0, 0), startHpr=Point3(0, 0, 0)
         )
-        hprInterval1 = self.pandaActor.hprInterval(
-            3, Point3(180, 0, 0), startHpr=Point3(0, 0, 0)
+        walkForwardToPX = self.pandaActor.posInterval(
+            5, Point3(10, -5, 0), startPos=Point3(0, -5, 0)
         )
-        hprInterval2 = self.pandaActor.hprInterval(
-            3, Point3(0, 0, 0), startHpr=Point3(180, 0, 0)
+        turnLeftInterval2 = self.pandaActor.hprInterval(
+            2, Point3(180, 0, 0), startHpr=Point3(90, 0, 0)
+        )
+        walkForwardToPY = self.pandaActor.posInterval(
+            5, Point3(10, 5, 0), startPos=Point3(10, -5, 0)
+        )
+        turnLeftInterval3 = self.pandaActor.hprInterval(
+            2, Point3(270, 0, 0), startHpr=Point3(180, 0, 0)
+        )
+        walkForwardToNX = self.pandaActor.posInterval(
+            5, Point3(0, 5, 0), startPos=Point3(10, 5, 0)
+        )
+        turnLeftInterval4 = self.pandaActor.hprInterval(
+            2, Point3(360, 0, 0), startHpr=Point3(270, 0, 0)
         )
 
         # Create and play the sequence that coordinates the intervals.
         self.pandaPace = Sequence(
-            posInterval1, hprInterval1, posInterval2, hprInterval2, name="pandaPace"
+            walkForwardToNY,
+            turnLeftInterval1,
+            walkForwardToPX,
+            turnLeftInterval2,
+            walkForwardToPY,
+            turnLeftInterval3,
+            walkForwardToNX,
+            turnLeftInterval4,
+            name="pandaPace",
         )
         self.pandaPace.loop()
 
