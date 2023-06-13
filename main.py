@@ -1,83 +1,39 @@
 from direct.showbase.ShowBase import ShowBase
-from direct.task import Task
+from panda3d.core import WindowProperties
 from direct.actor.Actor import Actor
-from direct.interval.IntervalGlobal import Sequence
-from panda3d.core import Point3
-
-from math import pi, sin, cos
 
 
-class MyApp(ShowBase):
+class Game(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
-        # Load the environment model.
-        self.scene = self.loader.loadModel("models/environment")
-        # Reparent the model to render.
-        self.scene.reparentTo(self.render)
-        # Apply scale and position transforms on the model.
-        self.scene.setScale(0.25, 0.25, 0.25)
-        self.scene.setPos(-8, 42, 0)
+        properties = WindowProperties()
+        properties.setSize(1000, 750)
+        self.win.requestProperties(properties)
 
-        # Add the spinCameraTask procedure to the task manager.
-        self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+        self.disableMouse()
 
-        # Load and transform the panda actor.
-        self.pandaActor = Actor("models/panda-model", {"walk": "models/panda-walk4"})
-        self.pandaActor.setScale(0.005, 0.005, 0.005)
-        self.pandaActor.reparentTo(self.render)
-        # Loop its animation.
-        self.pandaActor.loop("walk")
+        # Load the environment model
+        self.environment = loader.loadModel("Models/Misc/Environment/environment")
+        # Attach it to Parent NodePath - global render variable
+        self.environment.reparentTo(render)
 
-        # Create the lerp intervals needed for the panda to
-        # walk in square.
-        walkForwardToNY = self.pandaActor.posInterval(
-            5, Point3(0, -5, 0), startPos=Point3(0, 5, 0)
+        # Load the actor and attach
+        self.tempActor = Actor(
+            "Models/models/act_p3d_chan", {"walk": "Models/models/a_p3d_chan_run"}
         )
-        turnLeftInterval1 = self.pandaActor.hprInterval(
-            2, Point3(90, 0, 0), startHpr=Point3(0, 0, 0)
-        )
-        walkForwardToPX = self.pandaActor.posInterval(
-            5, Point3(10, -5, 0), startPos=Point3(0, -5, 0)
-        )
-        turnLeftInterval2 = self.pandaActor.hprInterval(
-            2, Point3(180, 0, 0), startHpr=Point3(90, 0, 0)
-        )
-        walkForwardToPY = self.pandaActor.posInterval(
-            5, Point3(10, 5, 0), startPos=Point3(10, -5, 0)
-        )
-        turnLeftInterval3 = self.pandaActor.hprInterval(
-            2, Point3(270, 0, 0), startHpr=Point3(180, 0, 0)
-        )
-        walkForwardToNX = self.pandaActor.posInterval(
-            5, Point3(0, 5, 0), startPos=Point3(10, 5, 0)
-        )
-        turnLeftInterval4 = self.pandaActor.hprInterval(
-            2, Point3(360, 0, 0), startHpr=Point3(270, 0, 0)
-        )
+        self.tempActor.reparentTo(render)
 
-        # Create and play the sequence that coordinates the intervals.
-        self.pandaPace = Sequence(
-            walkForwardToNY,
-            turnLeftInterval1,
-            walkForwardToPX,
-            turnLeftInterval2,
-            walkForwardToPY,
-            turnLeftInterval3,
-            walkForwardToNX,
-            turnLeftInterval4,
-            name="pandaPace",
-        )
-        self.pandaPace.loop()
+        self.tempActor.setPos(0, 0, 0)
+        self.tempActor.getChild(0).setH(90)
+        self.tempActor.loop("walk")
 
-    # Define a procedure to move the camera.
-    def spinCameraTask(self, task):
-        angleDegrees = task.time * 6.0
-        angleRadians = angleDegrees * (pi / 180.0)
-        self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
-        self.camera.setHpr(angleDegrees, 0, 0)
-        return Task.cont
+        # Move the camera to a position high above the screen
+        # --that is, offset it along the z-axis.
+        self.camera.setPos(0, 0, 32)
+        # Tilt the camera down by setting its pitch.
+        self.camera.setP(-90)
 
 
-app = MyApp()
-app.run()
+game = Game()
+game.run()
